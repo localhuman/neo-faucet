@@ -1,0 +1,6 @@
+protocol.nex.json
+
+.idea
+venv
+
+*.db3
