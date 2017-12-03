@@ -1,0 +1,28 @@
+{% extends 'index.html' %}
+  {% block navlinks %}
+  <nav class="nav nav-masthead">
+    <a class="nav-link" href="/">Home</a>
+  </nav>
+  {% endblock %}
+
+  {% block stuff %}
+  <div class="inner cover">
+    <h1 class="cover-heading">Request Approved!</h1>
+    <div class="alert alert-success">
+        {{ message_success }}
+    </div>
+
+    <hr/>
+    <div class="row row-json">
+
+        <div class="col-sm-12">
+            <pre>
+            {{ tx_json }}
+
+            </pre>
+        </div>
+    </div>
+
+  </div>
+
+  {% endblock %}

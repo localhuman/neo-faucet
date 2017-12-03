@@ -13,41 +13,66 @@
 
     <div class="site-wrapper">
 
-      <div class="site-wrapper-inner">
+      <div class="">
 
         <div class="cover-container">
 
           <div class="masthead clearfix">
             <div class="inner">
-              <h3 class="masthead-brand">City of Zion Faucet</h3>
+              <h3 class="masthead-brand">⛽ City of Zion Refill Station</h3>
+              {% block navlinks %}
               <nav class="nav nav-masthead">
-<!--                <a class="nav-link active" href="#">Home</a>
-                <a class="nav-link" href="#">Features</a>
+                <a class="nav-link active" href="/">Home</a>
+<!--                <a class="nav-link" href="#">Features</a>
                 <a class="nav-link" href="#">Contact</a> -->
               </nav>
+              {% endblock %}
+            </div>
+            <div class="subnav">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h6>Current height: {{ height }}</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        [neo]: {{ neo }} [gas]: {{ gas }} [wallet height]: {{ wallet_height }}
+                    </div>
+                </div>
             </div>
           </div>
 
+          {% block stuff %}
           <div class="inner cover">
             <h1 class="cover-heading">Free GAS and NEO</h1>
-              <h2>{{ msg }}</h2>
             <p class="lead">Please fill the form below to request Neo and Gas for your test development purposes on the City of Zion testnet.</p>
+
+              {% if error %}
+              <div class="alert alert-danger">
+              <p>{{ message_error }}</p>
+              </div>
+              {% endif %}
+
               <form action="/ask" method="post">
                   <div class="form-group">
                     <label for="id_coz_addr">Coz Tesntet address</label>
-                    <input type="text" class="form-control" id="id_coz_addr" name="coz_addr" aria-describedby="emailHelp" placeholder="APyEx5f4Zm4oCHwFWiSTaph1fPBxZacYVM">
+                    <input type="text" class="form-control" id="id_coz_addr" name="coz_addr" aria-describedby="coz_addrHelp" required placeholder="APyEx5f4Zm4oCHwFWiSTaph1fPBxZacYVM" {% if addr %}value="{{ addr }}"{% endif %}>
                     <small id="coz_addrHelp" class="form-text text-muted">This is an address of a wallet on the City of Zion testnet.</small>
                   </div>
-                  <div class="form-check">
+                  <div class="form-check has-dange">
                     <label class="form-check-label">
                       <input type="checkbox" class="form-check-input" name="do_agree">
-                        I understand the <a href="#guidelines">City of Zion Faucet guidelines.</a>
+                        I understand the <a href="#guidelines">City of Zion Refill Station guidelines.</a>
                     </label>
                   </div>
                   <hr/>
                   <button type="submit" class="btn btn-primary">Submit</button>
             </form>
           </div>
+
+
+          {% endblock %}
+
 
           <div class="inner cover guidelines">
             <a name="guidelines"></a>
@@ -60,6 +85,7 @@
                 <li>I understand that I should really just set up my own private network.</li>
             </ul>
           </div>
+
 
         </div>
 

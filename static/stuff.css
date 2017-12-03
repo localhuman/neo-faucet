@@ -59,6 +59,16 @@ body {
 }
 
 
+.alert {
+  text-shadow: none;
+}
+
+.row-json pre {
+  background: white;
+  font-size: .7rem;
+  text-shadow: none;
+}
+
 /*
  * Header
  */
@@ -91,6 +101,11 @@ body {
 .nav-masthead .active {
   color: #fff;
   border-bottom-color: #fff;
+}
+
+.subnav {
+  text-align: left;
+  padding: .1rem 2rem;
 }
 
 @media (min-width: 48em) {
