@@ -63,7 +63,11 @@ body {
   text-shadow: none;
 }
 
-.row-json pre {
+.alert a {
+  color:black;
+}
+
+pre {
   background: white;
   font-size: .7rem;
   text-shadow: none;
@@ -158,6 +162,6 @@ body {
   .masthead,
   .mastfoot,
   .cover-container {
-    width: 42rem;
+    width: 60rem;
   }
 }

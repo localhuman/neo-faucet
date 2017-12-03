@@ -93,12 +93,12 @@ class ItemStore(object):
 
         output1 = TransactionOutput(
             AssetId = Blockchain.SystemCoin().Hash,
-            Value = Fixed8(2000),
+            Value = Fixed8.FromDecimal(2000),
             script_hash = addr_to
         )
         output2 = TransactionOutput(
             AssetId = Blockchain.SystemShare().Hash,
-            Value = Fixed8(100),
+            Value = Fixed8.FromDecimal(100),
             script_hash = addr_to
         )
 
