@@ -254,8 +254,13 @@ def main():
     # Run all the things (blocking call)
     #reactor.run()
 
+    port = os.environ.get('FAUCET_PORT', 8080 )
+    host = os.environ.get('FAUCET_HOST', 'localhost')
+
+
+
     store = ItemStore()
-    store.app.run('localhost', 8080)
+    store.app.run(host, int(port))
 
     logger.info("Shutting down.")
 
