@@ -57,13 +57,14 @@ class ItemStore(object):
     sent_tx = None
 
     def __init__(self):
-        print("created item store!")
+
+        wallet_path = os.environ.get('FAUCET_WALLET_PATH','')
         passwd = os.environ.get('FAUCET_WALLET_PASSWORD', '')
 
-        if len(passwd) < 1:
-            raise Exception("Please set FAUCET_WALLET_PASSWORD in your ENV vars")
+        if len(passwd) < 1 or len(wallet_path) < 1:
+            raise Exception("Please set FAUCET_WALLET_PASSWORD and FAUCET_WALLET_PATH in your ENV vars")
 
-        self.wallet = UserWallet.Open(path='coznet.db3', password=passwd)
+        self.wallet = UserWallet.Open(path=wallet_path, password=passwd)
 
         dbloop = task.LoopingCall(self.wallet.ProcessBlocks)
         dbloop.start(.1)
