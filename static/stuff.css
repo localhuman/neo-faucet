@@ -73,12 +73,16 @@ pre {
   text-shadow: none;
 }
 
+.subnav {
+
+}
+
 /*
  * Header
  */
 
 .masthead {
-  margin-bottom: 2rem;
+
 }
 
 .masthead-brand {

@@ -8,6 +8,7 @@
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
         <link rel="stylesheet" href="/static/stuff.css">
+        <link rel="shortcut icon" href="/static/favicon.ico">
     </head>
     <body>
 
@@ -29,7 +30,9 @@
               </nav>
               {% endblock %}
             </div>
-            <div class="subnav">
+          </div>
+
+          <div class=" inner subnav">
                 <div class="row">
                     <div class="col-sm-4">
                         <h6>Current height: {{ height }}</h6>
@@ -46,7 +49,7 @@
                     </div>
                 </div>
             </div>
-          </div>
+
 
           {% block stuff %}
           <div class="inner cover">
@@ -67,7 +70,7 @@
                   </div>
                   <div class="form-check has-dange">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" name="do_agree">
+                      <input type="checkbox" class="form-check-input" name="do_agree" required>
                         I understand the <a href="#guidelines">City of Zion Refill Station guidelines.</a>
                     </label>
                   </div>
