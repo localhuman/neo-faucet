@@ -34,7 +34,6 @@ mmh3==2.5.1
 mock==2.0.0
 mpmath==1.0.0
 neo-boa==0.1.8
--e git+git@github.com:localhuman/neo-python.git@cd093a1afb327ab692f5d860c9fd05e123c0f3a7#egg=neo_python
 neo-python-rpc==0.1.8
 numpy==1.13.3
 pbr==3.1.1
