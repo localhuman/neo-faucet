@@ -4,9 +4,10 @@ Minimal NEO node with custom code in a background thread.
 It will log events from all smart contracts on the blockchain
 as they are seen in the received blocks.
 """
-import threading
-from time import sleep
 import os
+import json
+import pdb
+from datetime import date,timedelta,datetime
 
 from logzero import logger
 from twisted.internet import reactor, task
@@ -20,10 +21,7 @@ from neo.Core.Helper import Helper
 from neo.Core.TX.Transaction import TransactionOutput,ContractTransaction
 from neo.Implementations.Wallets.peewee.UserWallet import UserWallet
 from neo.SmartContract.ContractParameterContext import ContractParametersContext
-
-# If you want the log messages to also be saved in a logfile, enable the
-# next line. This configures a logfile with max 10 MB and 3 rotations:
-# settings.set_logfile("/tmp/logfile.log", max_bytes=1e7, backup_count=3)
+from peewee import *
 
 
 from twisted.web.static import File
@@ -32,13 +30,18 @@ from twisted.internet.defer import succeed
 from klein import Klein
 from jinja2 import Template,FileSystemLoader,Environment
 
-import json
-import pdb
 
 
-wallet = None
 
 
+
+class FaucetRequest(Model):
+    address = CharField()
+    last = DateField()
+
+class IPRequest(Model):
+    client = CharField(max_length=1024)
+    last = DateField()
 
 settings.set_logfile("logfile.log", max_bytes=1e7, backup_count=3)
 
@@ -54,9 +57,14 @@ class ItemStore(object):
                          trim_blocks=True)
 
 
+    run_db = None
+    run_db_path = 'faucet_run.db3'
+
     sent_tx = None
 
     def __init__(self):
+
+        self._build_run_db()
 
         wallet_path = os.environ.get('FAUCET_WALLET_PATH','')
         passwd = os.environ.get('FAUCET_WALLET_PASSWORD', '')
@@ -70,7 +78,23 @@ class ItemStore(object):
         dbloop.start(.1)
 
         self.wallet.Rebuild()
+        self.wallet._current_height = 100000
         print("created wallet: %s " % self.wallet)
+
+
+    def _build_run_db(self):
+
+        try:
+            self.run_db = SqliteDatabase(self.run_db_path)
+            self.run_db.connect()
+        except Exception as e:
+            logger.error("database file does not exist, or incorrect permissions")
+
+        try:
+            self.run_db.create_tables([FaucetRequest,IPRequest,], safe=True)
+        except Exception as e:
+            logger.error("couldnt build database %s " % e)
+
 
     def _get_context(self):
 
@@ -178,20 +202,52 @@ class ItemStore(object):
                     ctx['message_error'] = 'You must agree to the guidelines to proceed'
                 else:
 
-                    addr_shash = self.wallet.ToScriptHash(addr.decode('utf-8'))
+                    # check addr
+                    today = date.today()
+                    client = str(request.client)
 
-                    tx = self._make_tx(addr_shash)
+                    go_ahead = True
 
-                    if type(tx) is ContractTransaction:
-                        print("ALL OK!!!!!")
-                        self.sent_tx = tx
-                        request.redirect('/success')
-                        return succeed(None)
 
-                    else:
-                        ctx['message_error'] = 'Error constructing transaction: %s ' % tx
+                    total = IPRequest.filter(client=client,last=today).count()
+                    print("TOTAL: %s " % total)
+
+                    if total > 3:
+                        ctx['message_error'] = 'Too many requests. Try again later'
+                        go_ahead = False
+
+                    IPRequest.create(
+                        client=client,
+                        last=today
+                    )
+
+
+                    if go_ahead:
+                        freq, created = FaucetRequest.get_or_create(
+                            address=addr,
+                            last = today
+                        )
+
+                        if not created:
+                            go_ahead = False
+                            ctx['message_error'] = 'Already requested today'
+
+#                    pdb.set_trace()
+
+                    if go_ahead:
+                        addr_shash = self.wallet.ToScriptHash(addr.decode('utf-8'))
+
+                        tx = self._make_tx(addr_shash)
+
+                        if type(tx) is ContractTransaction:
+                            print("ALL OK!!!!!")
+                            self.sent_tx = tx
+                            request.redirect('/success')
+                            return succeed(None)
+
+                        else:
+                            ctx['message_error'] = 'Error constructing transaction: %s ' % tx
             else:
-                print("NO AGGREEEEE!!!!")
                 ctx['message_error'] = 'You must agree to the guidelines to proceed'
 
 
@@ -221,7 +277,7 @@ class ItemStore(object):
 
         self.sent_tx = None
         self.wallet.Rebuild()
-
+        self.wallet._current_height = 100000
         return output
 
     @app.route('/about')
@@ -246,13 +302,6 @@ def main():
     dbloop.start(.1)
     NodeLeader.Instance().Start()
 
-    # Start a thread with custom code
-#    d = threading.Thread(target=custom_background_code)
-#    d.setDaemon(True)  # daemonizing the thread will kill it when the main thread is quit
-#    d.start()
-
-    # Run all the things (blocking call)
-    #reactor.run()
 
     port = os.environ.get('FAUCET_PORT', 8080 )
     host = os.environ.get('FAUCET_HOST', 'localhost')

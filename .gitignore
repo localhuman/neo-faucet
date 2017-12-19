@@ -4,5 +4,5 @@ protocol.nex.json
 venv
 
 *.db3
-
+*.db
 *.log
